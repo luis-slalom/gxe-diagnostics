@@ -1,0 +1,242 @@
+/* Modal Overlay */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(1, 22, 33, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+}
+
+/* Modal Content */
+.modal-content {
+  background-color: #ffffff;
+  border-radius: 24px;
+  padding: 40px;
+  max-width: 640px;
+  width: calc(100% - 48px);
+  max-height: 85vh;
+  overflow-y: auto;
+  box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15),
+              0 0 1px rgba(0, 0, 0, 0.1);
+  animation: slideUp 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.modal-title {
+  font-family: 'Slalom Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+  font-size: 28px;
+  font-weight: 700;
+  color: #011621;
+  margin: 0 0 32px 0;
+  line-height: 1.25;
+  letter-spacing: -0.5px;
+}
+
+/* Form Groups */
+.form-group {
+  margin-bottom: 28px;
+}
+
+.form-label {
+  display: block;
+  font-family: 'Slalom Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  color: #011621;
+  margin-bottom: 10px;
+  letter-spacing: 0.2px;
+}
+
+/* Form Inputs */
+.form-input,
+.form-select {
+  width: 100%;
+  padding: 12px 14px;
+  border: 1px solid #D3D3D3;
+  border-radius: 8px;
+  font-family: 'Slalom Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+  font-size: 14px;
+  font-weight: 400;
+  color: #011621;
+  background-color: #ffffff;
+  transition: all 0.2s ease;
+  box-sizing: border-box;
+}
+
+.form-input::placeholder {
+  color: #999999;
+}
+
+.form-input:focus,
+.form-select:focus {
+  outline: none;
+  border-color: #00BCDB;
+  box-shadow: 0 0 0 3px rgba(0, 188, 219, 0.12);
+}
+
+.form-select {
+  cursor: pointer;
+  appearance: none;
+  background-image: url('data:image/svg+xml;charset=UTF-8,%3csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6"%3e%3cpath fill="%2300BCDB" stroke="%2300BCDB" stroke-width="1.5" d="M1 0.5L6 5.5L11 0.5" stroke-linecap="round" stroke-linejoin="round"/%3e%3c/svg%3e');
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  background-size: 12px 6px;
+  padding-right: 40px;
+}
+
+/* Error States */
+.form-input.error,
+.form-select.error {
+  border-color: #ef4444;
+  background-color: #fef2f2;
+}
+
+.form-error {
+  display: block;
+  margin-top: 6px;
+  font-size: 13px;
+  color: #ef4444;
+  font-family: 'Slalom Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+  font-weight: 500;
+}
+
+/* Modal Actions */
+.modal-actions {
+  display: flex;
+  gap: 16px;
+  justify-content: flex-end;
+  margin-top: 40px;
+  padding-top: 20px;
+  border-top: 1px solid #E5E5E5;
+}
+
+.btn-cancel,
+.btn-create {
+  padding: 10px 20px;
+  border-radius: 24px;
+  font-family: 'Slalom Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+  font-size: 15px;
+  font-weight: 700;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  letter-spacing: 0.3px;
+  white-space: nowrap;
+}
+
+/* Cancel Button */
+.btn-cancel {
+  background-color: transparent;
+  color: #00BCDB;
+  border: none;
+  padding: 10px 16px;
+}
+
+.btn-cancel:hover {
+  background-color: rgba(0, 188, 219, 0.08);
+  color: #005A5E;
+}
+
+.btn-cancel:active {
+  background-color: rgba(0, 188, 219, 0.12);
+  color: #00767A;
+}
+
+/* Create Button */
+.btn-create {
+  background-color: #00BCDB;
+  color: #ffffff;
+  padding: 10px 28px;
+  min-width: 130px;
+}
+
+.btn-create:hover:not(:disabled) {
+  background-color: #005A5E;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 188, 219, 0.3);
+}
+
+.btn-create:active:not(:disabled) {
+  background-color: #00767A;
+  transform: translateY(0);
+}
+
+.btn-create:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .modal-content {
+    padding: 32px 24px;
+    border-radius: 20px;
+    width: calc(100% - 32px);
+    margin: 16px;
+  }
+
+  .modal-title {
+    font-size: 24px;
+    margin-bottom: 28px;
+  }
+
+  .form-group {
+    margin-bottom: 24px;
+  }
+
+  .modal-actions {
+    flex-direction: column-reverse;
+    gap: 12px;
+    margin-top: 32px;
+    padding-top: 16px;
+  }
+
+  .btn-cancel,
+  .btn-create {
+    width: 100%;
+  }
+
+  .btn-cancel {
+    padding: 12px 16px;
+  }
+
+  .btn-create {
+    padding: 12px 16px;
+    min-width: auto;
+  }
+}
+
+/* Scrollbar Styling */
+.modal-content::-webkit-scrollbar {
+  width: 8px;
+}
+
+.modal-content::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.modal-content::-webkit-scrollbar-thumb {
+  background: #D3D3D3;
+  border-radius: 4px;
+}
+
+.modal-content::-webkit-scrollbar-thumb:hover {
+  background: #999999;
+}

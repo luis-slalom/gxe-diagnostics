@@ -1,0 +1,351 @@
+.report-screen {
+  min-height: 100vh;
+  background-color: #ffffff;
+  display: flex;
+  flex-direction: column;
+}
+
+.report-screen__header {
+  background: linear-gradient(135deg, rgba(0, 188, 219, 0.8) 0%, rgba(40, 82, 182, 0.8) 100%);
+  padding: 24px 60px;
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+  position: relative;
+}
+
+.report-screen__back-button {
+  background: none;
+  border: none;
+  color: #ffffff;
+  font-family: 'Slalom Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 8px 12px;
+  border-radius: 8px;
+  transition: background-color 0.2s ease;
+  white-space: nowrap;
+}
+
+.report-screen__back-button:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.report-screen__title-section {
+  flex: 1;
+}
+
+.report-screen__client-name {
+  font-family: 'Slalom Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-size: 32px;
+  font-weight: 700;
+  color: #ffffff;
+  margin: 0 0 8px 0;
+  line-height: 1.2;
+}
+
+.report-screen__meta {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.report-screen__project-name {
+  font-family: 'Slalom Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-size: 14px;
+  font-weight: 400;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.report-screen__badge {
+  background-color: rgba(255, 255, 255, 0.2);
+  color: #ffffff;
+  padding: 4px 12px;
+  border-radius: 16px;
+  font-size: 12px;
+  font-weight: 600;
+  font-family: 'Slalom Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+}
+
+.report-screen__content {
+  flex: 1;
+  padding: 60px;
+  max-width: 1400px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.report-screen__intro {
+  margin-bottom: 48px;
+}
+
+.report-screen__section-title {
+  font-family: 'Slalom Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-size: 28px;
+  font-weight: 700;
+  color: #000000;
+  margin: 0 0 16px 0;
+}
+
+.report-screen__section-description {
+  font-family: 'Slalom Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-size: 16px;
+  font-weight: 400;
+  color: #666666;
+  margin: 0;
+}
+
+.report-screen__opportunities {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.report-screen__opportunity-card {
+  background-color: #ffffff;
+  border: 1px solid #e0e0e0;
+  border-radius: 12px;
+  overflow: hidden;
+  transition: all 0.2s ease;
+}
+
+.report-screen__opportunity-card:hover {
+  border-color: #00bcdb;
+  box-shadow: 0 4px 12px rgba(0, 188, 219, 0.1);
+}
+
+.report-screen__opportunity-card.expanded {
+  border-color: #00bcdb;
+  box-shadow: 0 8px 24px rgba(0, 188, 219, 0.15);
+}
+
+.report-screen__opportunity-header {
+  padding: 24px;
+  cursor: pointer;
+  display: flex;
+  align-items: flex-start;
+  gap: 24px;
+  justify-content: space-between;
+}
+
+.report-screen__opportunity-title-group {
+  flex: 1;
+}
+
+.report-screen__opportunity-title {
+  font-family: 'Slalom Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-size: 18px;
+  font-weight: 700;
+  color: #000000;
+  margin: 0 0 8px 0;
+}
+
+.report-screen__opportunity-description {
+  font-family: 'Slalom Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-size: 14px;
+  font-weight: 400;
+  color: #666666;
+  margin: 0;
+}
+
+.report-screen__opportunity-scoring {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  min-width: 120px;
+  text-align: center;
+}
+
+.report-screen__scoring-label {
+  font-family: 'Slalom Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-size: 11px;
+  font-weight: 600;
+  color: #999999;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.report-screen__scoring-value {
+  font-family: 'Slalom Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-size: 20px;
+  font-weight: 700;
+  color: #2852b6;
+}
+
+.report-screen__expand-button {
+  background: none;
+  border: none;
+  font-size: 24px;
+  font-weight: 300;
+  color: #00bcdb;
+  cursor: pointer;
+  padding: 0 8px;
+  transition: color 0.2s ease;
+  min-width: 40px;
+}
+
+.report-screen__expand-button:hover {
+  color: #2852b6;
+}
+
+.report-screen__opportunity-details {
+  padding: 0 24px 24px 24px;
+  border-top: 1px solid #e0e0e0;
+  animation: slideDown 0.3s ease-out;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.report-screen__detail-row {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 24px;
+  margin-bottom: 24px;
+}
+
+.report-screen__detail-row:last-of-type {
+  margin-bottom: 24px;
+}
+
+.report-screen__detail-item {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.report-screen__detail-item.full-width {
+  grid-column: 1 / -1;
+}
+
+.report-screen__detail-label {
+  font-family: 'Slalom Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-size: 12px;
+  font-weight: 600;
+  color: #999999;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.report-screen__detail-value {
+  font-family: 'Slalom Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-size: 14px;
+  font-weight: 400;
+  color: #333333;
+  margin: 0;
+  line-height: 1.5;
+}
+
+.report-screen__opportunity-actions {
+  display: flex;
+  gap: 16px;
+  justify-content: flex-start;
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid #f0f0f0;
+}
+
+.report-screen__action-button {
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-family: 'Slalom Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: none;
+}
+
+.report-screen__action-button.secondary {
+  background-color: transparent;
+  color: #00767a;
+  border: 1px solid #e0e0e0;
+}
+
+.report-screen__action-button.secondary:hover {
+  background-color: #f5f5f5;
+  border-color: #00bcdb;
+}
+
+.report-screen__action-button.primary {
+  background-color: #00767a;
+  color: #ffffff;
+}
+
+.report-screen__action-button.primary:hover {
+  background-color: #005a5e;
+}
+
+/* Footer */
+.report-screen::after {
+  content: '';
+  background-color: #00767a;
+  padding: 24px 60px;
+  text-align: center;
+  color: #ffffff;
+  font-size: 12px;
+  margin-top: auto;
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+  .report-screen__content {
+    padding: 40px;
+  }
+
+  .report-screen__detail-row {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+}
+
+@media (max-width: 768px) {
+  .report-screen__header {
+    padding: 16px 20px;
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .report-screen__client-name {
+    font-size: 24px;
+  }
+
+  .report-screen__content {
+    padding: 20px;
+  }
+
+  .report-screen__opportunity-header {
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .report-screen__opportunity-scoring {
+    width: 100%;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .report-screen__opportunity-details {
+    padding: 0 20px 20px 20px;
+  }
+
+  .report-screen__detail-row {
+    grid-template-columns: 1fr;
+  }
+
+  .report-screen__opportunity-actions {
+    flex-wrap: wrap;
+  }
+}
