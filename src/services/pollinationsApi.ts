@@ -94,7 +94,16 @@ export async function generateText(
     throw new Error('No response generated from AI');
   } catch (error) {
     if (axios.isAxiosError(error)) {
-      throw new Error(`Pollinations AI API Error: ${error.message}`);
+      const errorMsg = error.response?.data?.error || error.response?.data?.details || error.message;
+      const statusCode = error.response?.status;
+
+      if (statusCode === 500) {
+        throw new Error(`The AI service is currently overloaded or experiencing issues. Please try again in a few moments. (Error: ${errorMsg})`);
+      } else if (statusCode === 429) {
+        throw new Error(`Rate limit exceeded. Please wait a moment and try again.`);
+      } else {
+        throw new Error(`AI API Error: ${errorMsg}`);
+      }
     }
     throw error;
   }
@@ -159,6 +168,6 @@ Please generate all 10 opportunities with complete detail for each section.`;
 
   return await generateText(prompt, systemPrompt, {
     temperature: 0.8,
-    max_tokens: 8000 // Allow for comprehensive responses
+    max_tokens: 3000 // Reduced to prevent API overload (will be capped at 4000 by proxy)
   });
 }

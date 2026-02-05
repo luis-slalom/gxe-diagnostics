@@ -11,6 +11,20 @@ export default async function handler(
   req: VercelRequest,
   res: VercelResponse
 ) {
+  // Enable CORS
+  res.setHeader('Access-Control-Allow-Credentials', 'true');
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS,PATCH,DELETE,POST,PUT');
+  res.setHeader(
+    'Access-Control-Allow-Headers',
+    'X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version'
+  );
+
+  // Handle OPTIONS request
+  if (req.method === 'OPTIONS') {
+    return res.status(200).end();
+  }
+
   // Only allow POST requests
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' });
@@ -24,6 +38,16 @@ export default async function handler(
       return res.status(400).json({ error: 'Messages array is required' });
     }
 
+    // Limit max_tokens to prevent API overload
+    const safeMaxTokens = Math.min(max_tokens || 3000, 4000);
+
+    console.log('Making request to Pollinations.ai with:', {
+      model: model || 'openai',
+      messageCount: messages.length,
+      temperature: temperature || 0.7,
+      max_tokens: safeMaxTokens
+    });
+
     // Make request to Pollinations.ai
     const response = await fetch(POLLINATIONS_API_URL, {
       method: 'POST',
@@ -34,22 +58,33 @@ export default async function handler(
         model: model || 'openai',
         messages,
         temperature: temperature || 0.7,
-        max_tokens: max_tokens || 4000,
+        max_tokens: safeMaxTokens,
         stream: false
       })
     });
 
+    const responseText = await response.text();
+    console.log('Pollinations API response status:', response.status);
+
     if (!response.ok) {
-      const errorText = await response.text();
-      console.error('Pollinations API error:', response.status, errorText);
+      console.error('Pollinations API error:', response.status, responseText);
       return res.status(response.status).json({
         error: `Pollinations API error: ${response.statusText}`,
-        details: errorText
+        details: responseText,
+        status: response.status
       });
     }
 
-    const data = await response.json();
-    return res.status(200).json(data);
+    try {
+      const data = JSON.parse(responseText);
+      return res.status(200).json(data);
+    } catch (parseError) {
+      console.error('Error parsing response:', parseError);
+      return res.status(500).json({
+        error: 'Failed to parse API response',
+        details: responseText
+      });
+    }
   } catch (error) {
     console.error('Proxy error:', error);
     return res.status(500).json({
