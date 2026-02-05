@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { ReportGenerator } from './components/ReportGenerator';
 import ReportScreen from './components/ReportScreen';
 import { Home as HomePage } from './pages/Home';
 import './App.css';
