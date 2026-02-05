@@ -83,6 +83,15 @@ export const Home: React.FC<{ onProjectCreated: (data: ProjectData) => void }> =
     setShowCreateModal(false);
   };
 
+  const handleSeeDetails = (project: Project) => {
+    // Navigate to report screen with this project's data
+    onProjectCreated({
+      projectName: project.name,
+      clientName: project.name, // Using project name as client name for existing projects
+      context: project.industry,
+    });
+  };
+
   return (
     <div className="home-container">
       {/* Header Section with Gradient Background */}
@@ -115,7 +124,7 @@ export const Home: React.FC<{ onProjectCreated: (data: ProjectData) => void }> =
               <div key={project.id} className="project-card">
                 <h3>{project.name}</h3>
                 <button
-                  onClick={() => handleOpenCreateModal()}
+                  onClick={() => handleSeeDetails(project)}
                   className="project-card-button"
                 >
                   See Details
@@ -130,7 +139,7 @@ export const Home: React.FC<{ onProjectCreated: (data: ProjectData) => void }> =
               <div key={project.id} className="project-card">
                 <h3>{project.name}</h3>
                 <button
-                  onClick={() => handleOpenCreateModal()}
+                  onClick={() => handleSeeDetails(project)}
                   className="project-card-button"
                 >
                   See Details
