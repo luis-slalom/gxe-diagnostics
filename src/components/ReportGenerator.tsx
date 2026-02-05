@@ -4,11 +4,18 @@ import './ReportGenerator.css';
 
 export const ReportGenerator: React.FC = () => {
   const [clientName, setClientName] = useState('');
+  const [projectName, setProjectName] = useState('');
+  const [context, setContext] = useState('');
   const [opportunities, setOpportunities] = useState<OpportunityData[]>([]);
   const [currentOpportunity, setCurrentOpportunity] = useState<Partial<OpportunityData>>({
     evidenceQuotes: [],
     triggerEvents: [],
-    earlyIndicators: []
+    earlyIndicators: [],
+    scoring: {
+      tam: 5,
+      switchCost: 5,
+      moat: 5
+    }
   });
   const [loading, setLoading] = useState(false);
 
@@ -21,20 +28,25 @@ export const ReportGenerator: React.FC = () => {
       setCurrentOpportunity({
         evidenceQuotes: [],
         triggerEvents: [],
-        earlyIndicators: []
+        earlyIndicators: [],
+        scoring: {
+          tam: 5,
+          switchCost: 5,
+          moat: 5
+        }
       });
     }
   };
 
   const handleGenerateReport = async () => {
-    if (!clientName || opportunities.length === 0) {
-      alert('Please enter a client name and add at least one opportunity');
+    if (!clientName || !projectName || opportunities.length === 0) {
+      alert('Please enter a client name, project name, and add at least one opportunity');
       return;
     }
-    
+
     setLoading(true);
     try {
-      await generateReportDocument(clientName, opportunities);
+      await generateReportDocument(clientName, projectName, context || 'Manual Entry', opportunities);
       alert('Report generated successfully!');
     } catch (error) {
       console.error('Error generating report:', error);
@@ -54,7 +66,7 @@ export const ReportGenerator: React.FC = () => {
   return (
     <div className="report-generator">
       <h1>Strategic Foresight Report Generator</h1>
-      
+
       <div className="client-info">
         <label htmlFor="clientName">Client Name:</label>
         <input
@@ -63,6 +75,28 @@ export const ReportGenerator: React.FC = () => {
           value={clientName}
           onChange={(e) => setClientName(e.target.value)}
           placeholder="Enter client name"
+        />
+      </div>
+
+      <div className="client-info">
+        <label htmlFor="projectName">Project Name:</label>
+        <input
+          id="projectName"
+          type="text"
+          value={projectName}
+          onChange={(e) => setProjectName(e.target.value)}
+          placeholder="Enter project name"
+        />
+      </div>
+
+      <div className="client-info">
+        <label htmlFor="context">Context:</label>
+        <input
+          id="context"
+          type="text"
+          value={context}
+          onChange={(e) => setContext(e.target.value)}
+          placeholder="Enter context (optional)"
         />
       </div>
 
@@ -159,16 +193,60 @@ export const ReportGenerator: React.FC = () => {
         </div>
 
         <div className="form-field">
-          <label htmlFor="scoring">Scoring (0-100):</label>
-          <input
-            id="scoring"
-            type="number"
-            min="0"
-            max="100"
-            value={currentOpportunity.scoring || ''}
-            onChange={(e) => setCurrentOpportunity({...currentOpportunity, scoring: parseInt(e.target.value) || 0})}
-            placeholder="Enter score"
-          />
+          <label>Scoring (0-10):</label>
+          <div className="scoring-fields">
+            <div>
+              <label htmlFor="scoringTam">TAM:</label>
+              <input
+                id="scoringTam"
+                type="number"
+                min="0"
+                max="10"
+                value={currentOpportunity.scoring?.tam || 5}
+                onChange={(e) => setCurrentOpportunity({
+                  ...currentOpportunity,
+                  scoring: {
+                    ...currentOpportunity.scoring!,
+                    tam: parseInt(e.target.value) || 0
+                  }
+                })}
+              />
+            </div>
+            <div>
+              <label htmlFor="scoringSwitchCost">Switch Cost:</label>
+              <input
+                id="scoringSwitchCost"
+                type="number"
+                min="0"
+                max="10"
+                value={currentOpportunity.scoring?.switchCost || 5}
+                onChange={(e) => setCurrentOpportunity({
+                  ...currentOpportunity,
+                  scoring: {
+                    ...currentOpportunity.scoring!,
+                    switchCost: parseInt(e.target.value) || 0
+                  }
+                })}
+              />
+            </div>
+            <div>
+              <label htmlFor="scoringMoat">Moat:</label>
+              <input
+                id="scoringMoat"
+                type="number"
+                min="0"
+                max="10"
+                value={currentOpportunity.scoring?.moat || 5}
+                onChange={(e) => setCurrentOpportunity({
+                  ...currentOpportunity,
+                  scoring: {
+                    ...currentOpportunity.scoring!,
+                    moat: parseInt(e.target.value) || 0
+                  }
+                })}
+              />
+            </div>
+          </div>
         </div>
 
         <button onClick={handleAddOpportunity} className="btn-add">
@@ -187,9 +265,9 @@ export const ReportGenerator: React.FC = () => {
         </div>
       )}
 
-      <button 
-        onClick={handleGenerateReport} 
-        disabled={loading || opportunities.length === 0 || !clientName}
+      <button
+        onClick={handleGenerateReport}
+        disabled={loading || opportunities.length === 0 || !clientName || !projectName}
         className="btn-generate"
       >
         {loading ? 'Generating...' : 'Generate Report'}

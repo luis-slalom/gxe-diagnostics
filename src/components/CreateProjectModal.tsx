@@ -5,6 +5,8 @@ interface CreateProjectModalProps {
   isOpen: boolean;
   onClose: () => void;
   onCreateProject: (projectData: ProjectFormData) => void;
+  isGenerating?: boolean;
+  generationError?: string | null;
 }
 
 export interface ProjectFormData {
@@ -28,6 +30,8 @@ export const CreateProjectModal: React.FC<CreateProjectModalProps> = ({
   isOpen,
   onClose,
   onCreateProject,
+  isGenerating = false,
+  generationError = null,
 }) => {
   const [formData, setFormData] = useState<ProjectFormData>({
     projectName: '',
@@ -74,13 +78,7 @@ export const CreateProjectModal: React.FC<CreateProjectModalProps> = ({
   const handleCreateProject = () => {
     if (validateForm()) {
       onCreateProject(formData);
-      // Reset form
-      setFormData({
-        projectName: '',
-        clientName: '',
-        context: '',
-      });
-      onClose();
+      // Note: Form reset and modal close now handled by parent after successful generation
     }
   };
 
@@ -99,7 +97,25 @@ export const CreateProjectModal: React.FC<CreateProjectModalProps> = ({
   return (
     <div className="modal-overlay">
       <div className="modal-content">
-        <h1 className="modal-title">Create a New Project</h1>
+        <h1 className="modal-title">
+          {isGenerating ? 'Generating Report...' : 'Create a New Project'}
+        </h1>
+
+        {/* Generation Status */}
+        {isGenerating && (
+          <div className="generation-status">
+            <div className="spinner"></div>
+            <p>Generating strategic foresight report with AI...</p>
+            <p className="status-subtext">This may take 1-2 minutes. Your Word document will download automatically when ready.</p>
+          </div>
+        )}
+
+        {/* Generation Error */}
+        {generationError && (
+          <div className="generation-error">
+            <p>{generationError}</p>
+          </div>
+        )}
 
         {/* Project Name Field */}
         <div className="form-group">
@@ -167,14 +183,16 @@ export const CreateProjectModal: React.FC<CreateProjectModalProps> = ({
           <button
             onClick={handleCancel}
             className="btn-cancel"
+            disabled={isGenerating}
           >
             Cancel
           </button>
           <button
             onClick={handleCreateProject}
             className="btn-create"
+            disabled={isGenerating}
           >
-            Create Project
+            {isGenerating ? 'Generating...' : 'Create Project'}
           </button>
         </div>
       </div>

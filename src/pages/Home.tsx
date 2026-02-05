@@ -3,6 +3,7 @@ import CreateProjectModal, {
   ProjectFormData,
 } from '../components/CreateProjectModal';
 import { ProjectData } from '../App';
+import { generateCompleteReport } from '../utils/reportGenerator';
 import './Home.css';
 
 interface Project {
@@ -56,23 +57,47 @@ export const Home: React.FC<{ onProjectCreated: (data: ProjectData) => void }> =
 }) => {
   const [projects, setProjects] = useState<Project[]>(mockProjects);
   const [showCreateModal, setShowCreateModal] = useState(false);
+  const [isGenerating, setIsGenerating] = useState(false);
+  const [generationError, setGenerationError] = useState<string | null>(null);
 
-  const handleCreateProject = (projectData: ProjectFormData) => {
-    const newProject: Project = {
-      id: String(projects.length + 1),
-      name: projectData.projectName,
-      industry: projectData.context,
-      lastModified: 'just now',
-    };
-    setProjects([newProject, ...projects]);
-    setShowCreateModal(false);
-    
-    // Call parent callback with full project data to navigate to report screen
-    onProjectCreated({
-      projectName: projectData.projectName,
-      clientName: projectData.clientName,
-      context: projectData.context,
-    });
+  const handleCreateProject = async (projectData: ProjectFormData) => {
+    setIsGenerating(true);
+    setGenerationError(null);
+
+    try {
+      // Generate the report using pollinations.ai
+      await generateCompleteReport(
+        projectData.clientName,
+        projectData.projectName,
+        projectData.context
+      );
+
+      // Add project to list
+      const newProject: Project = {
+        id: String(projects.length + 1),
+        name: projectData.projectName,
+        industry: projectData.context,
+        lastModified: 'just now',
+      };
+      setProjects([newProject, ...projects]);
+      setShowCreateModal(false);
+
+      // Call parent callback with full project data to navigate to report screen
+      onProjectCreated({
+        projectName: projectData.projectName,
+        clientName: projectData.clientName,
+        context: projectData.context,
+      });
+    } catch (error) {
+      console.error('Error generating report:', error);
+      setGenerationError(
+        error instanceof Error
+          ? error.message
+          : 'Failed to generate report. Please try again.'
+      );
+    } finally {
+      setIsGenerating(false);
+    }
   };
 
   const handleOpenCreateModal = () => {
@@ -160,6 +185,8 @@ export const Home: React.FC<{ onProjectCreated: (data: ProjectData) => void }> =
         isOpen={showCreateModal}
         onClose={handleCloseCreateModal}
         onCreateProject={handleCreateProject}
+        isGenerating={isGenerating}
+        generationError={generationError}
       />
     </div>
   );
