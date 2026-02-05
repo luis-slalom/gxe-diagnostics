@@ -1,11 +1,13 @@
 /**
  * Pollinations.ai API Integration Service
  * Provides text generation capabilities using the free pollinations.ai API
+ * Routes through our serverless proxy to avoid CORS issues
  */
 
 import axios from 'axios';
 
-const POLLINATIONS_API_URL = 'https://text.pollinations.ai/openai';
+// Use our serverless proxy endpoint to avoid CORS issues
+const POLLINATIONS_API_URL = '/api/generate-report';
 
 export interface PollinationsMessage {
   role: 'system' | 'user' | 'assistant';
