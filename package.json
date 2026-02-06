@@ -9,9 +9,11 @@
     "axios": "^1.13.4",
     "docx": "^8.5.0",
     "file-saver": "^2.0.5",
+    "groq-sdk": "^0.37.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "react-scripts": "5.0.1"
+    "react-scripts": "5.0.1",
+    "xlsx": "^0.18.5"
   },
   "scripts": {
     "preinstall": "npx npm-force-resolutions",

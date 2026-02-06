@@ -1,12 +1,14 @@
 import React, { useState } from 'react';
 import ReportScreen from './components/ReportScreen';
 import { Home as HomePage } from './pages/Home';
+import { OpportunityData } from './utils/reportGenerator';
 import './App.css';
 
 export interface ProjectData {
   projectName: string;
   clientName: string;
   context: string;
+  opportunities?: OpportunityData[];
 }
 
 type AppView = 'home' | 'report-screen';
@@ -34,6 +36,7 @@ function App() {
           projectName={projectData.projectName}
           clientName={projectData.clientName}
           context={projectData.context}
+          opportunities={projectData.opportunities || []}
           onBack={handleBackToHome}
         />
       ) : (

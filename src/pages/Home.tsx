@@ -65,8 +65,8 @@ export const Home: React.FC<{ onProjectCreated: (data: ProjectData) => void }> =
     setGenerationError(null);
 
     try {
-      // Generate the report using pollinations.ai
-      await generateCompleteReport(
+      // Generate the report and get opportunities
+      const opportunities = await generateCompleteReport(
         projectData.clientName,
         projectData.projectName,
         projectData.context
@@ -82,11 +82,12 @@ export const Home: React.FC<{ onProjectCreated: (data: ProjectData) => void }> =
       setProjects([newProject, ...projects]);
       setShowCreateModal(false);
 
-      // Call parent callback with full project data to navigate to report screen
+      // Call parent callback with full project data including opportunities to navigate to report screen
       onProjectCreated({
         projectName: projectData.projectName,
         clientName: projectData.clientName,
         context: projectData.context,
+        opportunities,
       });
     } catch (error) {
       console.error('Error generating report:', error);

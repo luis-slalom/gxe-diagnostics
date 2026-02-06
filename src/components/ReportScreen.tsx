@@ -1,4 +1,6 @@
 import React, { useState } from 'react';
+import { OpportunityData } from '../utils/reportGenerator';
+import * as XLSX from 'xlsx';
 import './ReportScreen.css';
 
 export interface Opportunity {
@@ -22,55 +24,143 @@ interface ReportScreenProps {
   projectName: string;
   clientName: string;
   context: string;
+  opportunities: OpportunityData[];
   onBack: () => void;
 }
 
-const mockOpportunities: Opportunity[] = [
-  {
-    id: '1',
-    title: 'Agentic AI Commerce Integration',
-    description: 'Autonomous agents surface, compare & book inventory',
-    scoring: '7/5/6',
-    cluster: 'AI + Personalization + Distribution',
-    enablingTech: 'Agentic AI, structured content, LLM APIs',
-    barriers: 'Interoperability, data norms, OTA dependence',
-    triggerEvents: 'Agentic booking adoption, AI‑first search',
-    earlyIndicators: 'AI search traffic, VC in agent infra',
-    segmentSize: 'Global travelers',
-    wtpProxies: 'CPC, conversion uplift',
-    underservedSegments: 'Independent & OTA‑dependent guests',
-    goToMarket: 'API + direct channel enablement',
-    scenarioSummary: 'Base/Up/Down adoption depending on AI visibility',
-  },
-  {
-    id: '2',
-    title: 'Sustainable Energy Transition Hotels',
-    description: 'Net‑zero energy properties as a premium segment',
-    scoring: '8/6/07',
-    cluster: 'ESG + Energy + Infra',
-    enablingTech: 'Solar, hydrogen, micro‑grids, HVAC IoT',
-    barriers: 'Capex, permitting',
-    triggerEvents: 'Tax incentives, grid modernization',
-    earlyIndicators: 'Renewable cost curves, ESG fund flows',
-    segmentSize: 'Global hospitality',
-    wtpProxies: 'Willingness to pay for green stays',
-    underservedSegments: 'Eco‑conscious travelers',
-    goToMarket: 'Premium positioning & certification',
-    scenarioSummary: 'Growth driven by regulatory and consumer demand',
-  },
-];
+/**
+ * Map OpportunityData from AI generation to display format
+ */
+function mapOpportunityData(data: OpportunityData, index: number): Opportunity {
+  // Extract first sentence or first 100 chars for description
+  const description = data.explanation
+    ? data.explanation.split(/[.!?]/)[0].substring(0, 150) + '...'
+    : 'Strategic opportunity for growth and innovation';
+
+  return {
+    id: String(index + 1),
+    title: data.title,
+    description,
+    scoring: `${data.scoring.tam}/${data.scoring.switchCost}/${data.scoring.moat}`,
+    cluster: data.marketMapping.split('\n')[0] || 'Market Opportunity',
+    enablingTech: data.triggerEvents.slice(0, 2).join(', ') || 'Emerging technologies',
+    barriers: data.marketMapping.includes('barriers')
+      ? data.marketMapping.split('barriers')[1]?.split('\n')[0] || 'Competitive landscape'
+      : 'Market and competitive challenges',
+    triggerEvents: data.triggerEvents.join(', '),
+    earlyIndicators: data.earlyIndicators.join(', '),
+    segmentSize: data.segmentSizing,
+    wtpProxies: data.strategicRelevance.split('\n')[0] || 'Value capture potential',
+    underservedSegments: data.underservedSegmentStrategy,
+    goToMarket: data.strategicRelevance,
+    scenarioSummary: data.scenarioModeling,
+  };
+}
 
 export const ReportScreen: React.FC<ReportScreenProps> = ({
   projectName,
   clientName,
   context,
+  opportunities: opportunityData,
   onBack,
 }) => {
-  const [opportunities] = useState<Opportunity[]>(mockOpportunities);
+  // Map AI-generated data to display format
+  const opportunities = opportunityData.map((data, index) => mapOpportunityData(data, index));
   const [expandedId, setExpandedId] = useState<string | null>(null);
 
   const handleToggleExpand = (id: string) => {
     setExpandedId(expandedId === id ? null : id);
+  };
+
+  /**
+   * Export report data to Excel (XLS) format
+   */
+  const handleDownloadExcel = () => {
+    // Create workbook
+    const wb = XLSX.utils.book_new();
+
+    // Create summary sheet
+    const summaryData = [
+      ['Strategic Foresight Report'],
+      ['Client:', clientName],
+      ['Project:', projectName],
+      ['Context:', context],
+      ['Generated:', new Date().toLocaleDateString()],
+      ['Total Opportunities:', opportunityData.length],
+      [],
+      ['Opportunity', 'TAM Score', 'Switch Cost', 'Moat Score', 'Description'],
+    ];
+
+    // Add opportunity summaries
+    opportunityData.forEach((opp, index) => {
+      summaryData.push([
+        `${index + 1}. ${opp.title}`,
+        opp.scoring.tam,
+        opp.scoring.switchCost,
+        opp.scoring.moat,
+        opp.explanation.substring(0, 200) + '...',
+      ]);
+    });
+
+    const summarySheet = XLSX.utils.aoa_to_sheet(summaryData);
+    XLSX.utils.book_append_sheet(wb, summarySheet, 'Summary');
+
+    // Create detailed sheet for each opportunity
+    opportunityData.forEach((opp, index) => {
+      const oppData = [
+        [`OPPORTUNITY ${index + 1}: ${opp.title}`],
+        [],
+        ['DETAILED EXPLANATION'],
+        [opp.explanation],
+        [],
+        ['EVIDENCE QUOTES AND CITATIONS'],
+        ...opp.evidenceQuotes.map(q => [`• ${q}`]),
+        [],
+        ['SEGMENT SIZING'],
+        [opp.segmentSizing],
+        [],
+        ['TRIGGER EVENTS'],
+        ...opp.triggerEvents.map(t => [`• ${t}`]),
+        [],
+        ['EARLY INDICATORS'],
+        ...opp.earlyIndicators.map(i => [`• ${i}`]),
+        [],
+        ['STRATEGIC RELEVANCE'],
+        [opp.strategicRelevance],
+        [],
+        ['MARKET MAPPING'],
+        [opp.marketMapping],
+        [],
+        ['UNDERSERVED SEGMENT STRATEGY'],
+        [opp.underservedSegmentStrategy],
+        [],
+        ['SCORING'],
+        [`TAM: ${opp.scoring.tam}/10`],
+        [`Switch Cost: ${opp.scoring.switchCost}/10`],
+        [`Moat Potential: ${opp.scoring.moat}/10`],
+        [],
+        ['SCENARIO MODELING'],
+        [opp.scenarioModeling],
+        [],
+        ['REGULATORY CONTEXT'],
+        [opp.regulatoryContext],
+      ];
+
+      const oppSheet = XLSX.utils.aoa_to_sheet(oppData);
+
+      // Set column widths
+      oppSheet['!cols'] = [{ wch: 100 }];
+
+      // Truncate sheet name to 31 characters (Excel limit)
+      const sheetName = `Opp ${index + 1} - ${opp.title}`.substring(0, 31);
+      XLSX.utils.book_append_sheet(wb, oppSheet, sheetName);
+    });
+
+    // Generate file name
+    const fileName = `${clientName}_Strategic_Foresight_${new Date().toISOString().split('T')[0]}.xlsx`;
+
+    // Download file
+    XLSX.writeFile(wb, fileName);
   };
 
   return (
@@ -87,6 +177,9 @@ export const ReportScreen: React.FC<ReportScreenProps> = ({
             <span className="report-screen__badge">AI-generated</span>
           </div>
         </div>
+        <button className="report-screen__download-button" onClick={handleDownloadExcel}>
+          ↓ Download Excel
+        </button>
       </header>
 
       {/* Main Content */}

@@ -27,6 +27,14 @@ export interface OpportunityData {
 }
 
 /**
+ * Remove markdown formatting (asterisks) from text
+ */
+function cleanMarkdown(text: string): string {
+  if (!text) return text;
+  return text.replace(/\*\*/g, '').replace(/\*/g, '').trim();
+}
+
+/**
  * Parse AI-generated text into structured opportunity data
  * Extracts information from the formatted text response
  */
@@ -34,12 +42,18 @@ export function parseOpportunitiesFromText(text: string): OpportunityData[] {
   const opportunities: OpportunityData[] = [];
   const opportunityBlocks = text.split(/OPPORTUNITY \d+:/i).filter(block => block.trim().length > 0);
 
-  for (const block of opportunityBlocks) {
+  for (let i = 0; i < opportunityBlocks.length; i++) {
+    const block = opportunityBlocks[i];
     const lines = block.split('\n').map(line => line.trim()).filter(line => line.length > 0);
 
     if (lines.length === 0) continue;
 
-    const title = lines[0].replace(/^\[.*?\]\s*/, '').trim();
+    // Skip the first block if it's just introductory text (no opportunity sections)
+    if (i === 0 && !block.match(/\d+\.\s*(DETAILED EXPLANATION|EVIDENCE|SEGMENT|TRIGGER|EARLY|STRATEGIC|MARKET|UNDERSERVED|SCORING|SCENARIO|REGULATORY)/i)) {
+      continue;
+    }
+
+    const title = cleanMarkdown(lines[0].replace(/^\[.*?\]\s*/, '').trim());
 
     const extractSection = (sectionName: string): string => {
       const sectionRegex = new RegExp(`\\d+\\.\\s*${sectionName}`, 'i');
@@ -55,14 +69,14 @@ export function parseOpportunitiesFromText(text: string): OpportunityData[] {
         ? lines.slice(sectionIndex + 1)
         : lines.slice(sectionIndex + 1, nextSectionIndex);
 
-      return sectionLines.join('\n').trim();
+      return cleanMarkdown(sectionLines.join('\n').trim());
     };
 
     const extractListItems = (sectionName: string): string[] => {
       const content = extractSection(sectionName);
       return content
         .split(/[-•]\s*/)
-        .map(item => item.trim())
+        .map(item => cleanMarkdown(item.trim()))
         .filter(item => item.length > 0);
     };
 
@@ -365,13 +379,14 @@ export async function generateReportDocument(
 
 /**
  * Generate a complete strategic foresight report
- * This is the main entry point that combines AI generation and document creation
+ * This is the main entry point that combines AI generation and parsing
+ * Returns parsed opportunities to be displayed in the UI
  */
 export async function generateCompleteReport(
   clientName: string,
   projectName: string,
   context: string
-): Promise<void> {
+): Promise<OpportunityData[]> {
   try {
     // Generate opportunities using AI
     const aiResponse = await generateStrategicForesightReport(clientName, context);
@@ -383,8 +398,7 @@ export async function generateCompleteReport(
       throw new Error('No opportunities were generated. Please try again.');
     }
 
-    // Generate and download the Word document
-    await generateReportDocument(clientName, projectName, context, opportunities);
+    return opportunities;
   } catch (error) {
     console.error('Error generating report:', error);
     throw error;
